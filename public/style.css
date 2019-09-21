@@ -41,8 +41,8 @@ p {
 }
 
 .menu-bar-item {
-  padding-right: 20px;
-  padding-left: 20px;
+  padding-right: 30px;
+  padding-left: 30px;
   justify-content: center;
 
 }
@@ -89,15 +89,26 @@ p {
 
 }
 
-#logo {
+.logo {
   width:50px;
   height:50px;
   border:0;
 }
 
-#logo:hover {
+#app-logo {
   width:64px;
   height:64px;
+  border:0;
+}
+
+.logo:hover {
+  width:64px;
+  height:64px;
+}
+
+#title-holder {
+  display: flex;
+  justify-content: center;
 }
 /* selector styling */
 /* -------------------------------------------------------------------------- */

@@ -5,7 +5,10 @@
 <head>
 
   <title>Pathfinding Visualizer</title>
-  <h1>Pathfinding Visualizer</h1>
+  <div id='title-holder' width='%100'>
+    <img src="../assets/app-logo-2.png" id='app-logo'>
+    <h1>Pathfinding Visualizer</h1>
+  </div>
 
   <div id='menu-bar-holder' width='%100'>
 
@@ -13,8 +16,8 @@
     <div class='menu-bar-item'>
       <!-- <div class="custom-select" width='%100' height='%100'> -->
         <!-- <p>Algorithm:</p> -->
-        <select id="algorithms:" class='selector' >
-            <option value="not-selected">Algorithms:</option>
+        <select id="algorithms" class='selector' >
+            <option value="not-selected">Algorithm:</option>
             <option value="Dijkstra's Algorithm">Dijkstra's Algorithm</option>
             <option value="A* Search">A* Search</option>
             <option value="Greedy Best-first Search">Greedy Best-first Search</option>
@@ -56,7 +59,7 @@
 
     <!-- clear board button -->
     <div class='menu-bar-item'>
-        <button class="button">Clear Board</span></button>
+        <button class="button" id='clear-board-button'>Clear Board</span></button>
     </div>
 
     <!-- node type selector -->
@@ -82,8 +85,9 @@
 
         <div id='link-holder' width='100%' >
           <!-- <a href="https://github.com/emmanuelrocha001/pathfinding-visualization">Github Repository</a> -->
-          <a href="https://github.com/emmanuelrocha001/pathfinding-visualization">
-              <img src="../assets/github-logo-white.png" id='logo'>
+          <a href="https://github.com/emmanuelrocha001/pathfinding-visualization" target="_blank">
+              <img src="../assets/github-logo-white.png" class='logo'>
+              <!-- <img src="../assets/app-logo-2.png" class='logo'> -->
             </a>
         </div>
 
