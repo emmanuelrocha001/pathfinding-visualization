@@ -1,0 +1,27 @@
+{
+  "name": "pathfinding-visualization",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/emmanuelrocha001/pathfinding-visualization.git"
+  },
+  "author": "Emmanuel Rocha",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/emmanuelrocha001/pathfinding-visualization/issues"
+  },
+  "homepage": "https://github.com/emmanuelrocha001/pathfinding-visualization#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "jquery": "^3.4.1",
+    "p5": "^0.9.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.2"
+  }
+}

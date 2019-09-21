@@ -1,0 +1,97 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+
+  <title>Pathfinding Visualizer</title>
+  <h1>Pathfinding Visualizer</h1>
+
+  <div id='menu-bar-holder' width='%100'>
+
+    <!-- algorithm selector -->
+    <div class='menu-bar-item'>
+      <!-- <div class="custom-select" width='%100' height='%100'> -->
+        <!-- <p>Algorithm:</p> -->
+        <select id="algorithms:" class='selector' >
+            <option value="not-selected">Algorithms:</option>
+            <option value="Dijkstra's Algorithm">Dijkstra's Algorithm</option>
+            <option value="A* Search">A* Search</option>
+            <option value="Greedy Best-first Search">Greedy Best-first Search</option>
+            <option value="Swarm Algorithm">Swarm Algorithm</option>
+            <option value="Convergent Swarm Algorithm">Convergent Swarm Algorithm</option>
+            <option value="Bidirectional Swarm Algorithm">Bidirectional Swarm Algorithm</option>
+            <option value="Breadth-first Search">Breadth-first Search</option>
+            <option value="Depth-first Search">Depth-first Search</option>
+        </select>
+      <!-- </div> -->
+    </div>
+
+    <!-- node type selector -->
+    <div class='menu-bar-item'>
+      <!-- <p>Node Type:</p> -->
+      <select id="node-type" class='selector'>
+          <option value="not-selected">Node Type:</option>
+          <option value="start_node">Start</option>
+          <option value="end_node">End</option>
+          <option value="wall_node">Wall</option>
+      </select>
+    </div>
+
+    <!-- visualize button -->
+    <div class='menu-bar-item'>
+      <button class="button">Visualize</span></button>
+    </div>
+
+    <!-- clear path button -->
+    <div class='menu-bar-item'>
+        <button class="button">Clear Path</span></button>
+    </div>
+
+
+    <!-- clear walls & weights button -->
+    <div class='menu-bar-item'>
+      <button class="button">Clear Walls & Weights</span></button>
+    </div>
+
+    <!-- clear board button -->
+    <div class='menu-bar-item'>
+        <button class="button">Clear Board</span></button>
+    </div>
+
+    <!-- node type selector -->
+    <div class='menu-bar-item'>
+        <!-- <p>Speed:</p> -->
+        <select id="speed" class='selector'>
+            <option value="not-selected">Speed:</option>
+            <option value="fast">Fast</option>
+            <option value="medium">Medium</option>
+            <option value="slow">Slow</option>
+        </select>
+      </div>
+
+  </div>
+
+  <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+
+</head>
+    <body>
+
+        <div id="sketch-holder" width='100%'></div>
+
+        <div id='link-holder' width='100%' >
+          <!-- <a href="https://github.com/emmanuelrocha001/pathfinding-visualization">Github Repository</a> -->
+          <a href="https://github.com/emmanuelrocha001/pathfinding-visualization">
+              <img src="../assets/github-logo-white.png" id='logo'>
+            </a>
+        </div>
+
+        <script src='../node_modules/jquery/dist/jquery.js'></script>
+        <script defer src='../node_modules/p5/lib/p5.js'></script>
+        <script defer src='../src/Node.js'></script>
+        <script defer src='../src/app.js'></script>
+
+    </body>
+
+</html>
