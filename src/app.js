@@ -10,6 +10,7 @@ const COLOR_WALL = color(0, 0, 0, TRANSPERENCY );
 const COLOR_START = color(0, 255, 0, TRANSPERENCY);
 const COLOR_END = color( 255, 0, 0, TRANSPERENCY);
 
+const COLOR_MAIN = color( 255, 122, 122, TRANSPERENCY );
 // canvas variables
 var canvas;
 // const HORIZONTAL_PERCENTAGE = .99;
@@ -143,36 +144,6 @@ function createLogicalGrid() {
 
 }
 
-function drawGrid( grid ) {
-
-    // var node_size = ( width / ( logical_grid_size * 3 ) );
-    console.log( 'updating display' );
-    for(var y=0; y < grid.length; y++)
-    {
-        for(var x=0; x < grid[y].length; x++)
-        {
-            fill( COLOR_WHITE );
-
-            if( grid[y][x].get_node_type == 'wall' )
-            {
-                fill( COLOR_GRAY );
-            }
-
-            square( x*current_display_node_size, y*current_display_node_size, current_display_node_size );
-
-            // display node type
-            if( grid[y][x].get_node_type == 'start' ) {
-                // display start node
-                image( start_node_asset, x*current_display_node_size, y*current_display_node_size, current_display_node_size, current_display_node_size);
-            } else if( grid[y][x].get_node_type == 'end' ) {
-                // display end node
-                image( end_node_asset, x*current_display_node_size, y*current_display_node_size, current_display_node_size, current_display_node_size);
-            }
-
-        }
-    }
-    update_display = false;
-}
 // select event listeners
 // --------------------------------------------------------------------------------
 // algorithms
@@ -298,6 +269,12 @@ document.getElementById( 'visualize-button' ).addEventListener( 'click', event =
 
 });
 
+
+function keyPressed() {
+    if( keyCode === ENTER ) {
+        console.log( logical_grid );
+    }
+}
 function mousePressed() {
 
     var x_selected = Math.floor ( mouseX / current_display_node_size );
@@ -326,15 +303,25 @@ function mouseDragged() {
         // check if position selected i valid
         if( ( ( x_selected >= 0 ) && ( x_selected <= logical_grid[0].length-1 ) ) && ( ( y_selected >=0 )  && ( y_selected <= logical_grid.length - 1 ) ) ) {
             // check if not in selection queue
-            var is_in_queue = true;
+            var is_not_in_queue = true;
             for(var i=0; i < selectionQueue.length; i++) {
                 if( selectionQueue[i][0] == y_selected && selectionQueue[i][1] == x_selected ) {
-                    is_in_queue = false;
+                    is_not_in_queue = false;
                 }
             }
 
-            // push to queue
-            selectionQueue.push( [ y_selected, x_selected ] );
+            if ( is_not_in_queue ) {
+
+                // set a maker to show node is being selected, don't show if start and end node is located there
+                if( logical_grid[ y_selected ][ x_selected ].get_node_type != 'start' && logical_grid[ y_selected ][ x_selected ].get_node_type != 'end'  )
+                {
+                    logical_grid[ y_selected ][ x_selected ].set_is_being_selected = true;
+                }
+                // update display to show marker
+                update_display = true;
+                // push to queue
+                selectionQueue.push( [ y_selected, x_selected ] );
+            }
         }
 
     }
@@ -402,10 +389,49 @@ function clearSelectionQueue() {
             if ( logical_grid[ current_node_position[0] ][ current_node_position[1] ].get_node_type != 'start' && logical_grid[ current_node_position[0] ][ current_node_position[1] ].get_node_type != 'end'  ) {
                 // place wall node
                 logical_grid[ current_node_position[0] ][ current_node_position[1] ].set_node_type = 'wall';
+                // remove selection marker
+                logical_grid[ current_node_position[0] ][ current_node_position[1] ].set_is_being_selected = false;
             }
         }
     }
     update_display = true;
+}
+
+function drawGrid( grid ) {
+
+    // var node_size = ( width / ( logical_grid_size * 3 ) );
+    console.log( 'updating display' );
+    for(var y=0; y < grid.length; y++)
+    {
+        for(var x=0; x < grid[y].length; x++)
+        {
+            fill( COLOR_WHITE );
+
+            if( grid[y][x].get_node_type == 'wall' )
+            {
+                fill( COLOR_GRAY );
+            }
+
+            square( x*current_display_node_size, y*current_display_node_size, current_display_node_size );
+
+            // display node type
+            if( grid[y][x].get_node_type == 'start' ) {
+                // display start node
+                image( start_node_asset, x*current_display_node_size, y*current_display_node_size, current_display_node_size, current_display_node_size);
+            } else if( grid[y][x].get_node_type == 'end' ) {
+                // display end node
+                image( end_node_asset, x*current_display_node_size, y*current_display_node_size, current_display_node_size, current_display_node_size);
+            }
+
+            // show selection marker
+            if( grid[y][x].get_is_being_selected ) {
+                fill( COLOR_MAIN );
+                square( x*current_display_node_size, y*current_display_node_size, current_display_node_size );
+            }
+
+        }
+    }
+    update_display = false;
 }
 
 function draw() {

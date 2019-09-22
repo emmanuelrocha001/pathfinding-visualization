@@ -4,6 +4,7 @@ class Node {
         this._node_type = null;
         this._is_path = true;
         this._weight = null;
+        this._is_being_selected = false;
 
     }
 
@@ -37,6 +38,18 @@ class Node {
 
     set set_weight( weight ) {
         this._weight = weight;
+    }
+
+    get get_weight() {
+        return this._weight;
+    }
+
+    get get_is_being_selected() {
+        return this._is_being_selected;
+    }
+
+    set set_is_being_selected( select ) {
+        this._is_being_selected = select;
     }
 
 
