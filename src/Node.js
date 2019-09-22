@@ -3,6 +3,7 @@ class Node {
         this._visited = false;
         this._node_type = null;
         this._is_path = true;
+        this._weight = null;
 
     }
 
@@ -29,6 +30,15 @@ class Node {
     set set_is_path( is_path ) {
         this._is_path = is_path;
     }
+
+    get get_weight() {
+        return this._weight;
+    }
+
+    set set_weight( weight ) {
+        this._weight = weight;
+    }
+
 
 
 }

@@ -18,14 +18,14 @@
         <!-- <p>Algorithm:</p> -->
         <select id="algorithms" class='selector' >
             <option value="not-selected">Algorithm:</option>
-            <option value="Dijkstra's Algorithm">Dijkstra's Algorithm</option>
-            <option value="A* Search">A* Search</option>
-            <option value="Greedy Best-first Search">Greedy Best-first Search</option>
-            <option value="Swarm Algorithm">Swarm Algorithm</option>
-            <option value="Convergent Swarm Algorithm">Convergent Swarm Algorithm</option>
-            <option value="Bidirectional Swarm Algorithm">Bidirectional Swarm Algorithm</option>
-            <option value="Breadth-first Search">Breadth-first Search</option>
-            <option value="Depth-first Search">Depth-first Search</option>
+            <option value="dijkstras-algorithm">Dijkstra's Algorithm</option>
+            <option value="a-start-search">A* Search</option>
+            <option value="greedy-best-first-search">Greedy Best-first Search</option>
+            <option value="swarm-algorithm">Swarm Algorithm</option>
+            <option value="convergent-swarm-algorithm">Convergent Swarm Algorithm</option>
+            <option value="bidirectional-swarm-algorithm">Bidirectional Swarm Algorithm</option>
+            <option value="breadth-first-search">Breadth-first Search</option>
+            <option value="depth-first-search">Depth-first Search</option>
         </select>
       <!-- </div> -->
     </div>
@@ -35,26 +35,26 @@
       <!-- <p>Node Type:</p> -->
       <select id="node-type" class='selector'>
           <option value="not-selected">Node Type:</option>
-          <option value="start_node">Start</option>
-          <option value="end_node">End</option>
-          <option value="wall_node">Wall</option>
+          <option value="start">Start</option>
+          <option value="end">End</option>
+          <option value="wall">Wall</option>
       </select>
     </div>
 
     <!-- visualize button -->
     <div class='menu-bar-item'>
-      <button class="button">Visualize</span></button>
+      <button class="button" id='visualize-button'>Visualize</span></button>
     </div>
 
     <!-- clear path button -->
     <div class='menu-bar-item'>
-        <button class="button">Clear Path</span></button>
+        <button class="button" id='clear-path-button'>Clear Path</span></button>
     </div>
 
 
     <!-- clear walls & weights button -->
     <div class='menu-bar-item'>
-      <button class="button">Clear Walls & Weights</span></button>
+      <button class="button" id='clear-walls-weights-button'>Clear Walls & Weights</span></button>
     </div>
 
     <!-- clear board button -->
@@ -81,15 +81,21 @@
 </head>
     <body>
 
-        <div id="sketch-holder" width='100%'></div>
+      <div id='tip-text-holder' width='100%'>
+        <p>tip:</p>
+        <p id='tip'></p>
 
-        <div id='link-holder' width='100%' >
-          <!-- <a href="https://github.com/emmanuelrocha001/pathfinding-visualization">Github Repository</a> -->
-          <a href="https://github.com/emmanuelrocha001/pathfinding-visualization" target="_blank">
-              <img src="../assets/github-logo-white.png" class='logo'>
-              <!-- <img src="../assets/app-logo-2.png" class='logo'> -->
-            </a>
-        </div>
+      </div>
+
+      <div id="sketch-holder" width='100%'></div>
+
+      <div id='link-holder' width='100%' >
+        <!-- <a href="https://github.com/emmanuelrocha001/pathfinding-visualization">Github Repository</a> -->
+        <a href="https://github.com/emmanuelrocha001/pathfinding-visualization" target="_blank">
+            <img src="../assets/github-logo-white.png" class='logo'>
+            <!-- <img src="../assets/app-logo-2.png" class='logo'> -->
+          </a>
+      </div>
 
         <script src='../node_modules/jquery/dist/jquery.js'></script>
         <script defer src='../node_modules/p5/lib/p5.js'></script>

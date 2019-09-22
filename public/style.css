@@ -35,7 +35,7 @@ p {
   margin-bottom: 0;
   margin-left: 0;
   margin-right: 0;
-  padding-right: 2px;
+  padding-right: 5px;
 
 
 }
@@ -86,6 +86,15 @@ p {
   justify-content: center;
   padding-top: 10px;
   color: white;
+
+}
+
+#tip-text-holder {
+  display: flex;
+  justify-content: center;
+  color: white;
+  /* padding-top: 10px; */
+  padding-bottom: 10px;
 
 }
 
