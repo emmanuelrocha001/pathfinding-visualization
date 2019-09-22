@@ -67,8 +67,8 @@ function calculateCanvasDimensions() {
 function preload() {
 
     // TODO: stalls time, if commented out application crashes, try using jquery to fix
-    end_node_asset = loadImage('../../assets/end-node-original.png');
-    start_node_asset = loadImage('../../assets/start-node-original.png');
+    end_node_asset = loadImage('./assets/end-node-original.png');
+    start_node_asset = loadImage('./assets/start-node-original.png');
 
 
 }
