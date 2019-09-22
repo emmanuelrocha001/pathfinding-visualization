@@ -42,6 +42,8 @@ var current_tip = null;
 var start_node_asset;
 var end_node_asset;
 
+// multiple selection
+var clear_queue = false;
 
 
 
@@ -269,7 +271,7 @@ document.getElementById( 'clear-walls-weights-button' ).addEventListener( 'click
         for(var x=0; x < logical_grid[y].length; x++)
         {
             // set node type to null if it equals 'wall'
-            if( logical_grid[y][x] === 'wall_node') {
+            if( logical_grid[y][x].get_node_type == 'wall') {
                 logical_grid[y][x].set_node_type = null;
             }
             // set node weight to null
@@ -305,9 +307,44 @@ function mousePressed() {
     if( ( ( x_selected >= 0 ) && ( x_selected <= logical_grid[0].length-1 ) ) && ( ( y_selected >=0 )  && ( y_selected <= logical_grid.length - 1 ) ) ) {
         console.log( 'x: %d y:%d', x_selected, y_selected);
         selectionQueue.push( [ y_selected, x_selected ] );
+        //
+        if ( current_selected_node_type != 'wall') {
+            clear_queue = true;
+        }
         console.log(selectionQueue);
     }
 
+}
+
+// multiple selection
+function mouseDragged() {
+    // console.log('hi');
+    if( current_selected_node_type == 'wall' ){
+        var x_selected = Math.floor ( mouseX / current_display_node_size );
+        var y_selected = Math.floor ( mouseY / current_display_node_size );
+
+        // check if position selected i valid
+        if( ( ( x_selected >= 0 ) && ( x_selected <= logical_grid[0].length-1 ) ) && ( ( y_selected >=0 )  && ( y_selected <= logical_grid.length - 1 ) ) ) {
+            // check if not in selection queue
+            var is_in_queue = true;
+            for(var i=0; i < selectionQueue.length; i++) {
+                if( selectionQueue[i][0] == y_selected && selectionQueue[i][1] == x_selected ) {
+                    is_in_queue = false;
+                }
+            }
+
+            // push to queue
+            selectionQueue.push( [ y_selected, x_selected ] );
+        }
+
+    }
+
+}
+
+function mouseReleased() {
+    if ( current_selected_node_type == 'wall') {
+        clear_queue = true;
+    }
 }
 
 function clearSelectionQueue() {
@@ -375,7 +412,8 @@ function draw() {
     frameRate(60);
 
     // clear selection queue
-    if( selectionQueue.length > 0) {
+    if( selectionQueue.length > 0 && clear_queue == true ) {
+        clear_queue = false;
         clearSelectionQueue();
     }
 
