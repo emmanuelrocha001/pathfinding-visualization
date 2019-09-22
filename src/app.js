@@ -46,6 +46,7 @@ var end_node_asset;
 // multiple selection
 var clear_queue = false;
 
+var test_image;
 
 
 function calculateCanvasDimensions() {
@@ -67,8 +68,20 @@ function calculateCanvasDimensions() {
 function preload() {
 
     // TODO: stalls time, if commented out application crashes, try using jquery to fix
-    end_node_asset = loadImage('/assets/end-node-original.png');
-    start_node_asset = loadImage('/assets/start-node-original.png');
+    // end_node_asset = loadImage('/assets/end-node-original.png');
+    // start_node_asset = loadImage('/assets/start-node-original.png');
+    end_node_asset = loadImage('https://emmanuelrocha001.github.io/pathfinding-visualization/assets/end-node-original.png');
+    start_node_asset = loadImage('https://emmanuelrocha001.github.io/pathfinding-visualization/assets/start-node-original.png');
+    // test_image = loadImage('https://emmanuelrocha001.github.io/pathfinding-visualization/assets/app-logo.png')
+    // Jimp.read('https://emmanuelrocha001.github.io/pathfinding-visualization/assets/app-logo.png')
+    // .then(image => {
+    //     // Do stuff with the image.
+    //     console.log('read image');
+    //     test_image = image;
+    // })
+    // .catch(err => {
+    //     // Handle an exception.
+    // });
 
 
 }
@@ -272,9 +285,10 @@ document.getElementById( 'visualize-button' ).addEventListener( 'click', event =
 
 function keyPressed() {
     if( keyCode === ENTER ) {
-        // console.log( logical_grid );
+        console.log(document.getElementById( 'app-logo'));
     }
 }
+
 function mousePressed() {
 
     var x_selected = Math.floor ( mouseX / current_display_node_size );
@@ -450,10 +464,15 @@ function draw() {
     }
 
 
+    // if (test_image != null) {
+    //     // console.log(' image loaded');
+    //     image( test_image, 0, 0);
+    // }
     // update display
     if( update_display ) {
         drawGrid( logical_grid );
     }
+
 
 
 }
