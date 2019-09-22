@@ -1,11 +1,11 @@
 new p5();
 
+const TRANSPERENCY = 75;
 const BACKGROUND_COLOR = color(255, 212,86);
 const COLOR_WHITE = color(255, 255, 255);
 const COLOR_BLUE = color(135, 206, 235, 100);
 const COLOR_GRAY = color(176, 176, 176);
 
-const TRANSPERENCY = 150;
 const COLOR_WALL = color(0, 0, 0, TRANSPERENCY );
 const COLOR_START = color(0, 255, 0, TRANSPERENCY);
 const COLOR_END = color( 255, 0, 0, TRANSPERENCY);
@@ -38,6 +38,13 @@ var current_selected_end_node = null;
 // tip based on settings
 var current_tip = null;
 
+// load default resources
+var start_node_asset;
+var end_node_asset;
+
+
+
+
 function calculateCanvasDimensions() {
 
     var dimensions = new Array();
@@ -54,8 +61,15 @@ function calculateCanvasDimensions() {
 
 
 }
-function setup() {
+function preload() {
 
+    // TODO: stalls time, if commented out application crashes, try using jquery to fix
+    end_node_asset = loadImage('../../assets/end-node-original.png');
+    start_node_asset = loadImage('../../assets/start-node-original.png');
+
+
+}
+function setup() {
     var canvas_dimensions = calculateCanvasDimensions();
     canvas = createCanvas(canvas_dimensions[0], canvas_dimensions[1] );
     // canvas = createCanvas( Math.floor( windowWidth * HORIZONTAL_PERCENTAGE ) , Math.floor( windowHeight * VERTICAL_PERCENTAGE )) ;
@@ -67,6 +81,12 @@ function setup() {
 
     //set initial tip
     document.getElementById( 'tip' ).innerHTML = 'pick an algorithm to visualize' ;
+    // set initial node type to start
+    current_selected_node_type = 'start';
+    //set initial visualization speed to fast
+    current_selected_visualization_speed = 'fast';
+    // display grid
+    update_display = true;
 }
 
 
@@ -74,6 +94,8 @@ function windowResized() {
     // resizeCanvas( Math.floor( windowWidth * HORIZONTAL_PERCENTAGE ) , Math.floor( windowHeight * VERTICAL_PERCENTAGE ));
     var canvas_dimensions = calculateCanvasDimensions();
     resizeCanvas( canvas_dimensions[0], canvas_dimensions[1] );
+    //resize assets
+    // resizeAssets();
     // update display
     update_display = true;
     // console.log(windowWidth);
@@ -105,19 +127,17 @@ function createLogicalGrid() {
     }
 
     // set default start and end node
-    current_selected_start_node = [ Math.floor( logical_grid_size[0] / 3 ), Math.floor( logical_grid_size[1] / 2 ) ];
-    current_selected_end_node = [ Math.floor( logical_grid_size[0] * ( 2 / 3 )  ), Math.floor( logical_grid_size[1] / 2 ) ];
+    current_selected_start_node = [ Math.floor( logical_grid_size[1] / 2 ), Math.floor( logical_grid_size[0] / 3 ) ];
+    current_selected_end_node = [  Math.floor( logical_grid_size[1] / 2 ), Math.floor( logical_grid_size[0] * ( 2 / 3 )  ) ];
     // set node types
-    logical_grid[ current_selected_start_node[1] ] [current_selected_start_node[0] ].set_node_type = 'start';
-    logical_grid[ current_selected_end_node[1] ] [current_selected_end_node[0] ].set_node_type = 'end';
+    logical_grid[ current_selected_start_node[0] ] [current_selected_start_node[1] ].set_node_type = 'start';
+    logical_grid[ current_selected_end_node[0] ] [current_selected_end_node[1] ].set_node_type = 'end';
 
     // console.log(current_selected_start_node);
     // console.log(current_selected_end_node);
 
     console.log(logical_grid);
 
-    // display grid
-    update_display = true;
 
 }
 
@@ -131,20 +151,22 @@ function drawGrid( grid ) {
         {
             fill( COLOR_WHITE );
 
-            if( grid[y][x].get_visited == true )
+            if( grid[y][x].get_node_type == 'wall' )
             {
                 fill( COLOR_GRAY );
             }
 
+            square( x*current_display_node_size, y*current_display_node_size, current_display_node_size );
+
             // display node type
-            if( grid[y][x].get_node_type == 'start' )
-            {
-                fill( COLOR_START );
-            } else if( grid[y][x].get_node_type == 'end' ){
-                fill( COLOR_END );
+            if( grid[y][x].get_node_type == 'start' ) {
+                // display start node
+                image( start_node_asset, x*current_display_node_size, y*current_display_node_size, current_display_node_size, current_display_node_size);
+            } else if( grid[y][x].get_node_type == 'end' ) {
+                // display end node
+                image( end_node_asset, x*current_display_node_size, y*current_display_node_size, current_display_node_size, current_display_node_size);
             }
 
-            square( x*current_display_node_size, y*current_display_node_size, current_display_node_size );
         }
     }
     update_display = false;
@@ -184,8 +206,10 @@ function generateTip() {
     var generated_tip;
     if ( current_selected_algorithm == 'not-selected'  || current_selected_algorithm == null ) {
         generated_tip = 'pick an algorithm to visualize';
-    } else if ( current_selected_visualization_speed == 'not-selected'  || current_selected_visualization_speed == null ) {
-        generated_tip = 'set visualization speed';
+    } else if ( current_selected_start_node == null ) {
+        generated_tip = 'a start node must be placed'
+    } else if ( current_selected_end_node == null ) {
+        generated_tip = 'an end node must be placed'
     } else {
         generated_tip = 'click visualize to start visualization'
     }
@@ -212,6 +236,9 @@ document.getElementById( 'clear-board-button').addEventListener( 'click', event 
             logical_grid[y][x].set_is_path = false;
         }
     }
+    // clear start node and end end node
+    current_selected_start_node = null;
+    current_selected_end_node = null;
     // update display
     update_display = true;
 });
@@ -260,7 +287,10 @@ document.getElementById( 'visualize-button' ).addEventListener( 'click', event =
     // algorithm must be picked, visualization speed must best set, start and end node must be placed, weights are required depending on the alogorithm
     if( ( current_selected_algorithm != null && current_selected_algorithm != 'not-selected' ) && ( current_selected_visualization_speed != null && current_selected_visualization_speed != 'not-selected' ) && ( current_selected_start_node != null ) && ( current_selected_end_node != null ) ) {
         visualize_algorithm = true;
+        // suggest adding wall nodes
+        document.getElementById( 'tip' ).innerHTML = 'have you tried placing wall nodes yet?';
     } else {
+        generateTip();
         console.log(' requirements for visualization were not met');
     }
 
@@ -285,9 +315,59 @@ function clearSelectionQueue() {
         console.log( 'node updated');
         var current_node_position = selectionQueue.shift();
         current_node = logical_grid[ current_node_position[0] ][ current_node_position [1] ];
-        current_node.set_visited = !( current_node.get_visited );
-    }
+        // current_node.set_visited = !( current_node.get_visited );
+        // if selection node equals start
+        if( current_selected_node_type == 'start' ) {
+            if( current_selected_start_node == null )
+            {
+                // update start node
+                current_selected_start_node = [ current_node_position[0], current_node_position[1] ];
+                // set node type
+                logical_grid[ current_node_position[0] ][ current_node_position[1] ].set_node_type = 'start';
+            } else {
 
+                // if selected node is the end node
+                if( logical_grid[ current_node_position[0] ][ current_node_position[1] ].get_node_type == 'end' ) {
+                    current_selected_end_node = null;
+                }
+
+                //set previous start node type to null
+                logical_grid[ current_selected_start_node[0] ][ current_selected_start_node[1] ].set_node_type = null;
+                // update start node
+                current_selected_start_node = [ current_node_position[0], current_node_position[1] ];
+                // set node type
+                logical_grid[ current_node_position[0] ][ current_node_position[1] ].set_node_type = 'start';
+            }
+
+        } else if( current_selected_node_type == 'end' ) {
+            if( current_selected_end_node == null )
+            {
+                // update end node
+                current_selected_end_node = [ current_node_position[0], current_node_position[1] ];
+                // set node type
+                logical_grid[ current_node_position[0] ][ current_node_position[1] ].set_node_type = 'end';
+            } else {
+
+                // if selected node is the start node
+                if( logical_grid[ current_node_position[0] ][ current_node_position[1] ].get_node_type == 'start' ) {
+                    current_selected_start_node = null;
+                }
+
+                //set previous end node type to null
+                logical_grid[ current_selected_end_node[0] ][ current_selected_end_node[1] ].set_node_type = null;
+                // update end node
+                current_selected_end_node = [ current_node_position[0], current_node_position[1] ];
+                // set node type
+                logical_grid[ current_node_position[0] ][ current_node_position[1] ].set_node_type = 'end';
+            }
+
+        } else if( current_selected_node_type == 'wall' ) {
+            if ( logical_grid[ current_node_position[0] ][ current_node_position[1] ].get_node_type != 'start' && logical_grid[ current_node_position[0] ][ current_node_position[1] ].get_node_type != 'end'  ) {
+                // place wall node
+                logical_grid[ current_node_position[0] ][ current_node_position[1] ].set_node_type = 'wall';
+            }
+        }
+    }
     update_display = true;
 }
 
