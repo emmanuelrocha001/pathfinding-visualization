@@ -4,7 +4,9 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js"
+    "start": "nodemon server.js",
+    "build": "copyfiles index.html dist; copyfiles style/* dist; copyfiles assets/* dist; copyfiles src/* dist; copyfiles external-libraries/* dist",
+    "deploy": "gh-pages -d dist"
   },
   "repository": {
     "type": "git",
@@ -17,11 +19,13 @@
   },
   "homepage": "https://github.com/emmanuelrocha001/pathfinding-visualization#readme",
   "dependencies": {
+    "copyfiles": "^2.1.1",
     "express": "^4.17.1",
     "jquery": "^3.4.1",
     "p5": "^0.9.0"
   },
   "devDependencies": {
+    "gh-pages": "^2.1.1",
     "nodemon": "^1.19.2"
   }
 }
