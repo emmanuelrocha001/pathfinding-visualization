@@ -2,7 +2,7 @@ class Node {
     constructor() {
         this._visited = false;
         this._node_type = null;
-        this._is_path = true;
+        this._is_path = false;
         this._weight = null;
         this._is_being_selected = false;
 
