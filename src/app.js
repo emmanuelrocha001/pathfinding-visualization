@@ -10,6 +10,7 @@ const COLOR_WALL = color(0, 0, 0, TRANSPERENCY );
 const COLOR_START = color(0, 255, 0, TRANSPERENCY);
 const COLOR_END = color( 255, 0, 0, TRANSPERENCY);
 
+const COLOR_YELLOW = color( 249, 202, 81, TRANSPERENCY);
 const COLOR_MAIN = color( 255, 122, 122, TRANSPERENCY );
 // canvas variables
 var canvas;
@@ -29,7 +30,7 @@ var update_display = false;
 var selectionQueue = new Array();
 
 // settings value
-var visualize_algorithm = false;
+var visualizing_algorithm = false;
 var current_selected_algorithm = null;
 var current_selected_node_type = null;
 var current_selected_visualization_speed = null;
@@ -47,7 +48,10 @@ var end_node_asset;
 var clear_queue = false;
 
 var test_image;
-
+//algorithm visualization
+// var end_node_not_found = false;
+var current_visited_nodes;
+var current_optimal_path_nodes;
 
 function calculateCanvasDimensions() {
 
@@ -95,8 +99,11 @@ function setup() {
     // create logical grid
     createLogicalGrid();
 
+    //set path visualization variables to null
+    current_visited_nodes = null;
+    current_optimal_path_nodes = null;
     //set initial tip
-    document.getElementById( 'tip' ).innerHTML = 'pick an algorithm to visualize' ;
+    document.getElementById( 'tip' ).innerHTML = 'pick an algorithm to visualize( work in progress, please pick Depth-First Search' ;
     // set initial node type to start
     current_selected_node_type = 'start';
     //set initial visualization speed to fast
@@ -193,11 +200,11 @@ function generateTip() {
     if ( current_selected_algorithm == 'not-selected'  || current_selected_algorithm == null ) {
         generated_tip = 'pick an algorithm to visualize';
     } else if ( current_selected_start_node == null ) {
-        generated_tip = 'a start node must be placed'
+        generated_tip = 'a start node must be placed';
     } else if ( current_selected_end_node == null ) {
-        generated_tip = 'an end node must be placed'
+        generated_tip = 'an end node must be placed';
     } else {
-        generated_tip = 'click visualize to start visualization'
+        generated_tip = 'click visualize to start visualization';
     }
 
     // set tip
@@ -212,58 +219,66 @@ function generateTip() {
 document.getElementById( 'clear-board-button').addEventListener( 'click', event => {
     // console.log(event['currentTarget']['value']);
     // clear board
-    for(var y=0; y < logical_grid.length; y++)
-    {
-        for(var x=0; x < logical_grid[y].length; x++)
+    if( visualizing_algorithm == false ) {
+
+        for(var y=0; y < logical_grid.length; y++)
         {
-            // set node properties to default
-            logical_grid[y][x].set_node_type = null;
-            logical_grid[y][x].set_visited = false;
-            logical_grid[y][x].set_is_path = false;
+            for(var x=0; x < logical_grid[y].length; x++)
+            {
+                // set node properties to default
+                logical_grid[y][x].set_node_type = null;
+                logical_grid[y][x].set_visited = false;
+                logical_grid[y][x].set_is_path = false;
+            }
         }
+        // clear start node and end end node
+        current_selected_start_node = null;
+        current_selected_end_node = null;
+        // update display
+        update_display = true;
     }
-    // clear start node and end end node
-    current_selected_start_node = null;
-    current_selected_end_node = null;
-    // update display
-    update_display = true;
 });
 
 // clear path button
 document.getElementById( 'clear-path-button' ).addEventListener( 'click', event => {
     // console.log('clear path button pressed');
     // walls and weights
-    for(var y=0; y < logical_grid.length; y++)
-    {
-        for(var x=0; x < logical_grid[y].length; x++)
+    if( visualizing_algorithm == false ) {
+
+        for(var y=0; y < logical_grid.length; y++)
         {
-            // set variables used for path visualization to default
-            logical_grid[y][x].set_visited = false;
-            logical_grid[y][x].set_is_path = false;
+            for(var x=0; x < logical_grid[y].length; x++)
+            {
+                // set variables used for path visualization to default
+                logical_grid[y][x].set_visited = false;
+                logical_grid[y][x].set_is_path = false;
+            }
         }
+        // update display
+        update_display = true;
     }
-    // update display
-    update_display = true;
 });
 
 // clear walls and weights button
 document.getElementById( 'clear-walls-weights-button' ).addEventListener( 'click', event => {
     // console.log('clear walls and weights button pressed');
     // walls and weights
-    for(var y=0; y < logical_grid.length; y++)
-    {
-        for(var x=0; x < logical_grid[y].length; x++)
+    if( visualizing_algorithm == false ) {
+        for(var y=0; y < logical_grid.length; y++)
         {
-            // set node type to null if it equals 'wall'
-            if( logical_grid[y][x].get_node_type == 'wall') {
-                logical_grid[y][x].set_node_type = null;
+            for(var x=0; x < logical_grid[y].length; x++)
+            {
+                // set node type to null if it equals 'wall'
+                if( logical_grid[y][x].get_node_type == 'wall') {
+                    logical_grid[y][x].set_node_type = null;
+                }
+                // set node weight to null
+                logical_grid[y][x].set_weight = null;
             }
-            // set node weight to null
-            logical_grid[y][x].set_weight = null;
         }
+        // update display
+        update_display = true;
     }
-    // update display
-    update_display = true;
 });
 
 // visualize button
@@ -271,13 +286,22 @@ document.getElementById( 'visualize-button' ).addEventListener( 'click', event =
     // console.log('visualize button pressed');
     // check requirements for visualization
     // algorithm must be picked, visualization speed must best set, start and end node must be placed, weights are required depending on the alogorithm
-    if( ( current_selected_algorithm != null && current_selected_algorithm != 'not-selected' ) && ( current_selected_visualization_speed != null && current_selected_visualization_speed != 'not-selected' ) && ( current_selected_start_node != null ) && ( current_selected_end_node != null ) ) {
-        visualize_algorithm = true;
-        // suggest adding wall nodes
-        document.getElementById( 'tip' ).innerHTML = 'have you tried placing wall nodes yet?';
-    } else {
-        generateTip();
-        // console.log(' requirements for visualization were not met');
+    if( visualizing_algorithm == false ) {
+
+        if( ( current_selected_algorithm != null && current_selected_algorithm != 'not-selected' ) && ( current_selected_visualization_speed != null && current_selected_visualization_speed != 'not-selected' ) && ( current_selected_start_node != null ) && ( current_selected_end_node != null ) ) {
+            // visualize_algorithm = true;
+            if ( current_selected_algorithm == 'depth-first-search')
+            {
+                current_visited_nodes = DFSearch( current_selected_start_node, current_selected_end_node, logical_grid );
+                console.log( current_visited_nodes );
+                visualizing_algorithm = true;
+            }
+            // suggest adding wall nodes
+            document.getElementById( 'tip' ).innerHTML = 'visualization in progress please wait until it has finished...(TODO: disable all functionalities)';
+        } else {
+            generateTip();
+            // console.log(' requirements for visualization were not met');
+        }
     }
 
 });
@@ -285,7 +309,9 @@ document.getElementById( 'visualize-button' ).addEventListener( 'click', event =
 
 function keyPressed() {
     if( keyCode === ENTER ) {
-        console.log(document.getElementById( 'app-logo'));
+        // console.log( current_selected_start_node );
+        // console.log( DFSearch( current_selected_start_node, current_selected_end_node, logical_grid ) );
+
     }
 }
 
@@ -421,11 +447,18 @@ function drawGrid( grid ) {
         {
             fill( COLOR_WHITE );
 
+            if( grid[y][x].get_is_path == true ) {
+
+                if( grid[y][x].get_node_type != 'start' && grid[y][x].get_node_type != 'end' )
+                {
+                    fill( COLOR_YELLOW );
+                }
+            }
+            
             if( grid[y][x].get_node_type == 'wall' )
             {
                 fill( COLOR_GRAY );
             }
-
             square( x*current_display_node_size, y*current_display_node_size, current_display_node_size );
 
             // display node type
@@ -457,17 +490,25 @@ function draw() {
         clearSelectionQueue();
     }
 
-    // visualize algorithm
-    if ( visualize_algorithm ) {
-        // console.log( 'visualizing algorithm');
-        visualize_algorithm = false;
+    // visualization
+    if ( visualizing_algorithm  == true ) {
+
+        if ( current_visited_nodes != null)
+        {
+            if( current_visited_nodes.length > 0 )
+            {
+                draw_node = current_visited_nodes.shift();
+                logical_grid[ draw_node[0] ][ draw_node[1] ].set_is_path = true;
+                update_display = true;
+                // console.log(draw_node);
+                // draw_grid = true;
+            } else {
+                visualizing_algorithm = false;
+            }
+        }
+
     }
 
-
-    // if (test_image != null) {
-    //     // console.log(' image loaded');
-    //     image( test_image, 0, 0);
-    // }
     // update display
     if( update_display ) {
         drawGrid( logical_grid );
