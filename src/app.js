@@ -10,7 +10,7 @@ const COLOR_WALL = color(0, 0, 0, TRANSPERENCY );
 const COLOR_START = color(0, 255, 0, TRANSPERENCY);
 const COLOR_END = color( 255, 0, 0, TRANSPERENCY);
 
-const COLOR_YELLOW = color( 249, 202, 81, TRANSPERENCY);
+const COLOR_YELLOW = color( 249, 202, 81);
 const COLOR_MAIN = color( 255, 122, 122, TRANSPERENCY );
 // canvas variables
 var canvas;
@@ -29,8 +29,10 @@ var update_display = false;
 //selection update variables
 var selectionQueue = new Array();
 
-// settings value
+// settings values
 var visualizing_algorithm = false;
+const visualizing_step_size = 3;
+var numerical_visualization_speed;
 var current_selected_algorithm = null;
 var current_selected_node_type = null;
 var current_selected_visualization_speed = null;
@@ -52,6 +54,8 @@ var test_image;
 // var end_node_not_found = false;
 var current_visited_nodes;
 var current_optimal_path_nodes;
+
+
 
 function calculateCanvasDimensions() {
 
@@ -103,11 +107,13 @@ function setup() {
     current_visited_nodes = null;
     current_optimal_path_nodes = null;
     //set initial tip
-    document.getElementById( 'tip' ).innerHTML = 'pick an algorithm to visualize( work in progress, please pick Depth-First Search' ;
+    document.getElementById( 'tip' ).innerHTML = 'pick an algorithm to visualize' ;
     // set initial node type to start
     current_selected_node_type = 'start';
     //set initial visualization speed to fast
     current_selected_visualization_speed = 'fast';
+    //set actual speed
+    numerical_visualization_speed = visualizing_step_size * parseInt( document.getElementById( 'speed')[0]['value'] );
     // display grid
     update_display = true;
 }
@@ -179,6 +185,7 @@ document.getElementById( 'algorithms').addEventListener( 'change', event => {
 // node-type
 document.getElementById( 'node-type').addEventListener( 'change', event => {
     current_selected_node_type = event['currentTarget']["value"];
+
     // console.log(current_selected_node_type);
 
 
@@ -188,7 +195,8 @@ document.getElementById( 'node-type').addEventListener( 'change', event => {
 document.getElementById( 'speed').addEventListener( 'change', event => {
     current_selected_visualization_speed = event['currentTarget']["value"];
     // console.log(current_selected_visualization_speed);
-
+    numerical_visualization_speed = visualizing_step_size * parseInt( current_selected_visualization_speed );
+    console.log( numerical_visualization_speed );
     // generated tip based on settings
     generateTip();
 });
@@ -292,12 +300,15 @@ document.getElementById( 'visualize-button' ).addEventListener( 'click', event =
             // visualize_algorithm = true;
             if ( current_selected_algorithm == 'depth-first-search')
             {
+                document.getElementById( 'tip' ).innerHTML = 'visualization in progress...';
                 current_visited_nodes = DFSearch( current_selected_start_node, current_selected_end_node, logical_grid );
                 console.log( current_visited_nodes );
                 visualizing_algorithm = true;
             }
+            else {
+                document.getElementById( 'tip' ).innerHTML = ( current_selected_algorithm + ' has not been implemented yet, please pick a different algorithm');
+            }
             // suggest adding wall nodes
-            document.getElementById( 'tip' ).innerHTML = 'visualization in progress please wait until it has finished...(TODO: disable all functionalities)';
         } else {
             generateTip();
             // console.log(' requirements for visualization were not met');
@@ -309,6 +320,7 @@ document.getElementById( 'visualize-button' ).addEventListener( 'click', event =
 
 function keyPressed() {
     if( keyCode === ENTER ) {
+        // console.log( parseInt( document.getElementById( 'speed')[0]['value'] ) );
         // console.log( current_selected_start_node );
         // console.log( DFSearch( current_selected_start_node, current_selected_end_node, logical_grid ) );
 
@@ -317,18 +329,23 @@ function keyPressed() {
 
 function mousePressed() {
 
-    var x_selected = Math.floor ( mouseX / current_display_node_size );
-    var y_selected = Math.floor ( mouseY / current_display_node_size );
+    
+    // if visualization is not in progress
+    if ( visualizing_algorithm == false ) {
 
-    // check if position selected i valid
-    if( ( ( x_selected >= 0 ) && ( x_selected <= logical_grid[0].length-1 ) ) && ( ( y_selected >=0 )  && ( y_selected <= logical_grid.length - 1 ) ) ) {
-        // console.log( 'x: %d y:%d', x_selected, y_selected);
-        selectionQueue.push( [ y_selected, x_selected ] );
-        //
-        if ( current_selected_node_type != 'wall') {
-            clear_queue = true;
+        var x_selected = Math.floor ( mouseX / current_display_node_size );
+        var y_selected = Math.floor ( mouseY / current_display_node_size );
+
+        // check if position selected i valid
+        if( ( ( x_selected >= 0 ) && ( x_selected <= logical_grid[0].length-1 ) ) && ( ( y_selected >=0 )  && ( y_selected <= logical_grid.length - 1 ) ) ) {
+            // console.log( 'x: %d y:%d', x_selected, y_selected);
+            selectionQueue.push( [ y_selected, x_selected ] );
+            //
+            if ( current_selected_node_type != 'wall') {
+                clear_queue = true;
+            }
+            // console.log(selectionQueue);
         }
-        // console.log(selectionQueue);
     }
 
 }
@@ -427,8 +444,16 @@ function clearSelectionQueue() {
 
         } else if( current_selected_node_type == 'wall' ) {
             if ( logical_grid[ current_node_position[0] ][ current_node_position[1] ].get_node_type != 'start' && logical_grid[ current_node_position[0] ][ current_node_position[1] ].get_node_type != 'end'  ) {
-                // place wall node
-                logical_grid[ current_node_position[0] ][ current_node_position[1] ].set_node_type = 'wall';
+                
+                if ( logical_grid[ current_node_position[0] ][ current_node_position[1] ].get_node_type != 'wall' )
+                {
+                    // place wall node
+                    logical_grid[ current_node_position[0] ][ current_node_position[1] ].set_node_type = 'wall';
+                }
+                else {
+                    // remove wall node
+                    logical_grid[ current_node_position[0] ][ current_node_position[1] ].set_node_type = null;
+                }
                 // remove selection marker
                 logical_grid[ current_node_position[0] ][ current_node_position[1] ].set_is_being_selected = false;
             }
@@ -482,7 +507,7 @@ function drawGrid( grid ) {
 }
 
 function draw() {
-    frameRate(60);
+    frameRate(30);
 
     // clear selection queue
     if( selectionQueue.length > 0 && clear_queue == true ) {
@@ -495,15 +520,20 @@ function draw() {
 
         if ( current_visited_nodes != null)
         {
-            if( current_visited_nodes.length > 0 )
+            // visualizes a set of nodes based on speed 
+            for(var i=0; i<numerical_visualization_speed; i++)
             {
-                draw_node = current_visited_nodes.shift();
-                logical_grid[ draw_node[0] ][ draw_node[1] ].set_is_path = true;
-                update_display = true;
-                // console.log(draw_node);
-                // draw_grid = true;
-            } else {
-                visualizing_algorithm = false;
+                if( current_visited_nodes.length > 0 )
+                {  
+                    draw_node = current_visited_nodes.shift();
+                    logical_grid[ draw_node[0] ][ draw_node[1] ].set_is_path = true;
+                    update_display = true;
+                } else {
+                    visualizing_algorithm = false;
+                    // update tip
+                    document.getElementById( 'tip' ).innerHTML = 'try placing wall nodes this time';
+
+                }
             }
         }
 
